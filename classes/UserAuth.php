@@ -1,6 +1,6 @@
 <?php
 include_once 'Dbh.php';
-session_start();
+//session_start();
 
 class UserAuth extends Dbh{
     private static $db;
@@ -8,13 +8,42 @@ class UserAuth extends Dbh{
     public function __construct(){
         $this->db = new Dbh();
     }
-
+     public function validatePassword($password, $confirmPassword) {
+        $conn = $this->db->connect();
+        if($password === $confirmPassword){
+            return true;
+        } else {
+            return false;
+        }
+     }
+     public function checkEmailExist($email) {
+        $conn = $this->db->connect();
+        if($this->email = $email) {
+            $sql = "SELECT  email FROM Students WHERE email='$email'";
+        $result = $conn->query($sql);
+        if($result->num_rows > 0){
+            $_SESSION['email'] = $email;
+            return true;
+        } else {
+            return false;
+        }
+    }
+        }
+     
+        public function confirmPasswordMatch($password, $confirmPassword){
+            if($password === $confirmPassword){
+                return true;
+            } else {
+                return false;
+            }
+        }
     public function register($fullname, $email, $password, $confirmPassword, $country, $gender){
         $conn = $this->db->connect();
         if($this->confirmPasswordMatch($password, $confirmPassword)){
             $sql = "INSERT INTO Students (`full_names`, `email`, `password`, `country`, `gender`) VALUES ('$fullname','$email', '$password', '$country', '$gender')";
             if($conn->query($sql)){
                echo "Ok";
+               header("Location: dashboard.php");
             } else {
                 echo "Opps". $conn->error;
             }
@@ -29,7 +58,7 @@ class UserAuth extends Dbh{
         $result = $conn->query($sql);
         if($result->num_rows > 0){
             $_SESSION['email'] = $email;
-            header("Location: ../dashboard.php");
+            header("Location: dashboard.php");
         } else {
             header("Location: forms/login.php");
         }
@@ -37,7 +66,7 @@ class UserAuth extends Dbh{
 
     public function getUser($username){
         $conn = $this->db->connect();
-        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $sql = "SELECT * FROM Students WHERE username = '$username'";
         $result = $conn->query($sql);
         if($result->num_rows > 0){
             return $result->fetch_assoc();
@@ -91,19 +120,19 @@ class UserAuth extends Dbh{
         }
     }
 
-    public function updateUser($username, $password){
+    public function updateUser($email, $password){
         $conn = $this->db->connect();
-        $sql = "UPDATE users SET password = '$password' WHERE username = '$username'";
+        $sql = "UPDATE Students SET password = '$password' WHERE email = '$email'";
         if($conn->query($sql) === TRUE){
-            header("Location: ../dashboard.php?update=success");
+            header("Location: dashboard.php?update=success");
         } else {
             header("Location: forms/resetpassword.php?error=1");
         }
     }
 
-    public function getUserByUsername($username){
+    public function getUserByUsername($email){
         $conn = $this->db->connect();
-        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $sql = "SELECT * FROM Students WHERE email = '$email'";
         $result = $conn->query($sql);
         if($result->num_rows > 0){
             return $result->fetch_assoc();
@@ -112,17 +141,11 @@ class UserAuth extends Dbh{
         }
     }
 
-    public function logout($username){
+    public function logout($email){
         session_start();
         session_destroy();
-        header('Location: index.php');
+        header("Location: index.php");
     }
 
-    public function confirmPasswordMatch($password, $confirmPassword){
-        if($password === $confirmPassword){
-            return true;
-        } else {
-            return false;
-        }
+    
     }
-}

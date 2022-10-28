@@ -1,11 +1,22 @@
 <?php
 class Dbh {
-    private $hostname = "localhost";
-    private $username = "root";
-    private $password = "";
-    private $dbname = "zuriphp";
+    private $hostname;
+    private $username;
+    private $password;
+    private $dbname;
 
+   
 protected function connect() {
-    $conn = 'mysqli:hostname=' . $this->hostname . '; username=' . $this->username . '; password=' . $this->password . '; dbname=' . $this->dbhostname . ';';
+        $this->hostname ="localhost";
+        $this->username ="root";
+        $this->password ="";
+        $this->dbname ="zuriphp";
+        
+   $conn = mysqli_connect($this->hostname, $this->username,$this->password, $this->dbname);
+
+   return $conn;
 }
+
 }
+
+?>
